@@ -15,13 +15,15 @@ else
     # Create an unnamed session by default, unless a session name is passed or the
     # user (or the built-in completion) just queries something.
     typeset -a sessionArgs=(--session temp)
-
+    hasFileArgs=
     typeset -a args=()
     while [ $# -ne 0 ]
     do
 	case "$1" in
 	    -+([hV])|--@(info|sync-models|list-*|help|version))
 			sessionArgs=();;&
+	    -f|--file=*|--file)
+			hasFileArgs=t;;&
 
 	    -+([ecShV]))
 			args+=("$1"); shift;;
@@ -42,6 +44,11 @@ else
 	    *)		break;;
 	esac
     done
+    if [ $# -gt 0 -o "$hasFileArgs" ] && [ ${#sessionArgs[@]} -gt 0 ]; then
+	# DWIM: Enable automatic saving of a non-interactive session (i.e. one that has
+	# FILE(s) or TEXT passed).
+	sessionArgs+=(--save-session)
+    fi
 
     command aichat "${sessionArgs[@]}" "${args[@]}" "$@"
 fi
