@@ -20,15 +20,26 @@ else
     while [ $# -ne 0 ]
     do
 	case "$1" in
-	    --session|-s|--list-*|--version|-V)
-			args+=("$1"); shift; sessionArgs=();;
+	    -+([hV])|--@(info|sync-models|list-*|help|version))
+			sessionArgs=();;&
+
+	    -+([ecShV]))
+			args+=("$1"); shift;;
+	    --@(empty-session|save-session|rebuild-rag|execute|code|no-stream|dry-run|info|sync-models|list-*|help|version))
+			args+=("$1"); shift;;
+	    -[mrsaf])	args+=("$1" "${2?}"); shift; shift;;
+	    --@(model|prompt|role|session|agent|rag|macro|serve|file)=*)
+			args+=("$1"); shift;;
+	    --@(model|prompt|role|session|agent|rag|macro|serve|file))
+			args+=("$1" "${2?}"); shift; shift;;
+
 	    --@(nano|mini|pro))
 			# Shortcut options for favorite models at different cost levels.
 			modelVar="${1#--}"; modelVar="AICHAT_MODEL_${modelVar^^}"; shift
 			args+=(--model "${!modelVar}")
 			;;
 	    --)		args+=("$1"); shift; break;;
-	    *)		args+=("$1"); shift;;
+	    *)		break;;
 	esac
     done
 
