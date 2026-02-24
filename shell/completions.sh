@@ -30,3 +30,14 @@ _aichatEx()
     fi
 }
 complete -o bashdefault -o default -o nosort -F _aichatEx aichat
+
+_aichat_name_session()
+{
+    local IFS=$'\n'
+    COMPREPLY=()
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    readarray -t COMPREPLY < <(command cd "${XDG_CONFIG_HOME:-${HOME}/.config}/aichat/sessions/_" 2>/dev/null && readarray -t files < <(find . -type f  -printf '%P\n') && compgen -W "${files[*]}" -- "$cur")
+    [ ${#COMPREPLY[@]} -gt 0 ] && readarray -t COMPREPLY < <(printf "%q\n" "${COMPREPLY[@]}")
+}
+complete -F _aichat_name_session aichat-name-session
