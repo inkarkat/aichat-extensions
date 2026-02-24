@@ -23,7 +23,8 @@ fi
 askForSessionName()
 {
     local unnamedSessionFilespec; unnamedSessionFilespec="$(lastFiles -- "$AICHAT_UNNAMED_SESSION_DIR")" || return
-    aichat-name-session "$unnamedSessionFilespec" \
+    local namedSessionFilespec; namedSessionFilespec="$(aichat-name-session "$unnamedSessionFilespec")" \
+	&& printf >&2 '%sSession is saved as%s %s\n' "$AICHAT_COLOR_MESSAGE" "$AICHAT_COLOR_RESET" "$namedSessionFilespec" \
 	|| printf >&2 '%sUnnamed session is saved at%s %s\n' "$AICHAT_COLOR_MESSAGE" "$AICHAT_COLOR_RESET" "$unnamedSessionFilespec"
 }
 
