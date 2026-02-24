@@ -2,6 +2,7 @@
 shopt -qs extglob
 
 : ${AICHAT_COLOR_QUERY='[03;32m'}
+: ${AICHAT_COLOR_MESSAGE='[03m'}
 : ${AICHAT_COLOR_RESET='[0m'}
 
 : ${AICHAT_MODEL_NANO:=openai:gpt-5-nano}
@@ -32,7 +33,7 @@ askForSessionName()
     then
 	mv -- "$unnamedSessionFilespec" "${AICHAT_NAMED_SESSION_DIR}/${title// /-}.yaml"
     elif [ -n "$unnamedSessionFilespec" ]; then
-	printf >&2 'Unnamed session is saved at %s\n' "$unnamedSessionFilespec"
+	printf >&2 '%sUnnamed session is saved at%s %s\n' "$AICHAT_COLOR_MESSAGE" "$AICHAT_COLOR_RESET" "$unnamedSessionFilespec"
     fi
 }
 
