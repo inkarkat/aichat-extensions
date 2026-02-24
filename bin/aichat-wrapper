@@ -38,6 +38,7 @@ askForSessionName()
 
 # Create an unnamed session by default, unless a session name is passed or the
 # user (or the built-in completion) just queries something.
+isUseSession=t
 isNamedSession=
 typeset -a sessionArgs=(--session temp)
 hasFileArgs=
@@ -45,6 +46,8 @@ typeset -a args=()
 while [ $# -ne 0 ]
 do
     case "$1" in
+	--no-session)	shift; isUseSession=;;
+
 	-+([hV])|--@(info|sync-models|list-*|help|version))
 			sessionArgs=();;&
 	-f|--file=*|--file)
@@ -71,7 +74,7 @@ do
 done
 
 isNonInteractiveSession=; [ $# -gt 0 -o "$hasFileArgs" ] && isNonInteractiveSession=t
-if [ "$isNonInteractiveSession" ] && [ ${#sessionArgs[@]} -gt 0 ]; then
+if [ "$isUseSession" ] && [ "$isNonInteractiveSession" ] && [ ${#sessionArgs[@]} -gt 0 ]; then
     # DWIM: Enable automatic saving of a non-interactive session (i.e. one that has
     # FILE(s) or TEXT passed).
     sessionArgs+=(--save-session)
@@ -79,7 +82,7 @@ fi
 
 command aichat "${sessionArgs[@]}" "${args[@]}" "$@" || exit $?
 
-if [ "$isNonInteractiveSession" ] && [ ! "$isNamedSession" ]; then
+if [ "$isUseSession" ] && [ "$isNonInteractiveSession" ] && [ ! "$isNamedSession" ]; then
     # DWIM: Offer to store the unnamed session under an auto-generated title.
     askForSessionName
 fi
