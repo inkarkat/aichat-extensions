@@ -25,12 +25,14 @@ else
 	    -f|--file=*|--file)
 			hasFileArgs=t;;&
 
+	    --session|-s)
+			sessionArgs=("$1" "${2?}"); shift; shift;;
 	    -+([ecShV]))
 			args+=("$1"); shift;;
 	    --@(empty-session|save-session|rebuild-rag|execute|code|no-stream|dry-run|info|sync-models|list-*|help|version))
 			args+=("$1"); shift;;
-	    -[mrsaf])	args+=("$1" "${2?}"); shift; shift;;
-	    --@(model|prompt|role|session|agent|rag|macro|serve|file)=*)
+	    -[mraf])	args+=("$1" "${2?}"); shift; shift;;
+	    --@(model|prompt|role|agent|rag|macro|serve|file)=*)
 			args+=("$1"); shift;;
 	    --@(model|prompt|role|session|agent|rag|macro|serve|file))
 			args+=("$1" "${2?}"); shift; shift;;
