@@ -46,7 +46,9 @@ else
 	    *)		break;;
 	esac
     done
-    if [ $# -gt 0 -o "$hasFileArgs" ] && [ ${#sessionArgs[@]} -gt 0 ]; then
+
+    isNonInteractiveSession=; [ $# -gt 0 -o "$hasFileArgs" ] && isNonInteractiveSession=t
+    if [ "$isNonInteractiveSession" ] && [ ${#sessionArgs[@]} -gt 0 ]; then
 	# DWIM: Enable automatic saving of a non-interactive session (i.e. one that has
 	# FILE(s) or TEXT passed).
 	sessionArgs+=(--save-session)
