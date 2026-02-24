@@ -1,0 +1,32 @@
+#!/bin/bash
+
+: ${AICHAT_NAMED_SESSION_DIR:=${XDG_CONFIG_HOME:-${HOME}/.config}/aichat/sessions}
+: ${AICHAT_UNNAMED_SESSION_DIR:=${AICHAT_NAMED_SESSION_DIR}/_}
+
+printUsage()
+{
+    cat <<HELPTEXT
+Continue the most recent session of the all-in-one LLM CLI Tool.
+Unnamed sessions are promoted to a named session first.
+HELPTEXT
+    echo
+    printf 'Usage: %q %s\n' "$(basename "$1")" '[AICHAT-ARGS ...] [TEXT ...] [-?|-h|--help]'
+}
+
+case "$1" in
+    --help|-h|-\?)	shift; printUsage "$0"; exit 0;;
+esac
+
+if ! newestSessionFilespec="$(newestFile --name-only -- "$AICHAT_NAMED_SESSION_DIR")"; then
+    echo >&2 'No sessions found.'
+    exit 1
+fi
+
+if inside --directory "$AICHAT_UNNAMED_SESSION_DIR" -- "$newestSessionFilespec"; then
+    newestSessionFilespec="$(aichat-name-session "$newestSessionFilespec")" || exit 1
+fi
+
+sessionName="$(basename -- "$newestSessionFilespec")"
+sessionName="${sessionName%.yaml}"
+
+exec aichat-wrapper --session "$sessionName" "$@"
