@@ -1,13 +1,13 @@
 #!/bin/bash source-this-script
 
-_aichatEx()
+_aichat_wrapper_complete()
 {
     local IFS=$'\n'
     typeset -a aliases=(); readarray -t aliases < <(compgen -A command -- 'aichat-')
     aliases=("${aliases[@]/#aichat-/}")
 
     if [ $COMP_CWORD -ge 2 ] && contains "${COMP_WORDS[1]}" "${aliases[@]}"; then
-	local aichatAlias="_aichat_${COMP_WORDS[1]//-/_}"
+	local aichatAlias="_aichat_${COMP_WORDS[1]//-/_}_complete"
 	# Completing an alias; delegate to its custom completion function (if
 	# available)
 	if type -t "$aichatAlias" >/dev/null; then
@@ -19,7 +19,7 @@ _aichatEx()
     fi
     unset IFS
 
-    _aichat "$@"
+    _aichat "$@"    # The original completion function.
 
     if [ $COMP_CWORD -eq 1 ]; then
 	readarray -O ${#COMPREPLY[@]} -t COMPREPLY < <(
@@ -29,9 +29,9 @@ _aichatEx()
 	)
     fi
 }
-complete -o bashdefault -o default -o nosort -F _aichatEx aichat
+complete -o bashdefault -o default -o nosort -F _aichat_wrapper_complete aichat aichat-wrapper
 
-_aichat_name_session()
+_aichat_name_session_complete()
 {
     local IFS=$'\n'
     COMPREPLY=()
