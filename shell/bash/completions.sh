@@ -29,7 +29,11 @@ _aichat_wrapper_complete()
 	)
     fi
 }
-complete -o bashdefault -o default -o nosort -F _aichat_wrapper_complete aichat aichat-wrapper
+_aichat_complete()
+{
+    complete -o bashdefault -o default -o nosort -F _aichat_wrapper_complete "$@"
+}
+_aichat_complete aichat aichat-wrapper
 
 _aichat_name_session_complete()
 {
