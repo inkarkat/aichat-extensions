@@ -45,12 +45,14 @@ autoNameSession()
 isUseSession=t
 isNamedSession=
 typeset -a sessionArgs=(--session temp)
+
 hasFileArgs=
 typeset -a args=()
 while [ $# -ne 0 ]
 do
     case "$1" in
-	--no-session)	shift; isUseSession=;;
+	--no-session|-n)
+			shift; isUseSession=;;
 
 	-+([hV])|--@(info|sync-models|list-*|help|version))
 			sessionArgs=();;&
