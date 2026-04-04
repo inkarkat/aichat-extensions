@@ -59,12 +59,24 @@ typeset -a sessionArgs=(--session temp)
 
 hasFileArgs=
 typeset -a args=()
+typeset -a launcher=(command)
 while [ $# -ne 0 ]
 do
     case "$1" in
 	--help|-h|-\?)	shift; printUsage "$0"; exit 0;;
 	--no-session|-n)
-			shift; isUseSession=;;
+			shift; isUseSession=
+			# To turn off persistence while keeping context preservation within one
+			# invocation (what aichat calls "session"), we can use a temporary session and
+			# never persist it. For aichat to not ask for a session name, we need to disable
+			# session saving. Unfortunately, there's no easy override; we have to manipulate
+			# the configuration.
+			launcher=(withTempfile
+			    --exec cp -- "${XDG_CONFIG_HOME:-${HOME}/.config}/aichat/config.yaml" '{}' \;
+			    --exec ASSIGNMENT_OPERATOR=': ' addOrUpdateAssignment --in-place --lhs save_session --rhs false '{}' \;
+			    -- AICHAT_CONFIG_FILE='{}'
+			)
+			;;
 
 	-+([hV])|--@(info|sync-models|list-*|help|version))
 			sessionArgs=();;&
@@ -98,7 +110,7 @@ if [ "$isUseSession" ] && [ "$isNonInteractiveSession" ] && [ ${#sessionArgs[@]}
     sessionArgs+=(--save-session)
 fi
 
-command aichat "${sessionArgs[@]}" "${args[@]}" "$@" || exit $?
+"${launcher[@]}" aichat "${sessionArgs[@]}" "${args[@]}" "$@" || exit $?
 
 if [ "$isUseSession" ] && [ ! "$isNamedSession" ]; then
     if [ "$isNonInteractiveSession" ]; then
