@@ -40,8 +40,19 @@ autoNameSession()
 	fi
 }
 
+printUsage()
+{
+    command aichat --help 2>&1 | sed \
+	-e '/^ *\(-s, --session\)/i\
+  -n, --no-session		       Do not record this chat'
+}
+
 # Create an unnamed session by default, unless a session name is passed or the
 # user (or the built-in completion) just queries something.
+# Note: In aichat, session means that the context between inputs is preserved,
+# but to me, using a single interactive invocation where each input is separate
+# doesn't make any sense. So to me, "no session" means that the context is still
+# preserved, but the session is ephemeral and won't be saved.
 isUseSession=t
 isNamedSession=
 typeset -a sessionArgs=(--session temp)
@@ -51,6 +62,7 @@ typeset -a args=()
 while [ $# -ne 0 ]
 do
     case "$1" in
+	--help|-h|-\?)	shift; printUsage "$0"; exit 0;;
 	--no-session|-n)
 			shift; isUseSession=;;
 
