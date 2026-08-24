@@ -3,17 +3,17 @@
 _aichat_wrapper_complete()
 {
     local IFS=$'\n'
-    typeset -a aliases=(); readarray -t aliases < <(compgen -A command -- 'aichat-')
-    aliases=("${aliases[@]/#aichat-/}")
+    typeset -a extensions=(); readarray -t extensions < <(compgen -A command -- 'aichat-')
+    extensions=("${extensions[@]/#aichat-/}")
 
-    if [ $COMP_CWORD -ge 2 ] && contains "${COMP_WORDS[1]}" "${aliases[@]}"; then
-	local aichatAlias="_aichat_${COMP_WORDS[1]//-/_}_complete"
-	# Completing an alias; delegate to its custom completion function (if
+    if [ $COMP_CWORD -ge 2 ] && contains "${COMP_WORDS[1]}" "${extensions[@]}"; then
+	local aichatExtension="_aichat_${COMP_WORDS[1]//-/_}_complete"
+	# Completing an extension; delegate to its custom completion function (if
 	# available)
-	if type -t "$aichatAlias" >/dev/null; then
+	if type -t "$aichatExtension" >/dev/null; then
 	    COMP_WORDS=("aichat-${COMP_WORDS[1]}" "${COMP_WORDS[@]:2}")
 	    let COMP_CWORD-=1
-	    "$aichatAlias" "${COMP_WORDS[0]}" "${COMP_WORDS[COMP_CWORD]}" "${COMP_WORDS[COMP_CWORD-1]}"
+	    "$aichatExtension" "${COMP_WORDS[0]}" "${COMP_WORDS[COMP_CWORD]}" "${COMP_WORDS[COMP_CWORD-1]}"
 	    return $?
 	fi
     fi
@@ -23,9 +23,9 @@ _aichat_wrapper_complete()
 
     if [ $COMP_CWORD -eq 1 ]; then
 	readarray -O ${#COMPREPLY[@]} -t COMPREPLY < <(
-	    # Also offer aliases (aichat-aliasname, callable via my aichat wrapper
-	    # function as aichat aliasname).
-	    compgen -W "${aliases[*]}" -X "!${2}*"
+	    # Also offer extensions (aichat-extensionname, callable via my aichat wrapper
+	    # function as aichat extensionname).
+	    compgen -W "${extensions[*]}" -X "!${2}*"
 	)
     fi
 }

@@ -12,11 +12,11 @@ shopt -qs extglob
 : ${AICHAT_NAMED_SESSION_DIR:=${XDG_CONFIG_HOME:-${HOME}/.config}/aichat/sessions}
 : ${AICHAT_UNNAMED_SESSION_DIR:=${AICHAT_NAMED_SESSION_DIR}/_}
 
-# Allow definition of aichat aliases by putting an executable "aichat-foo"
+# Allow definition of aichat extensions by putting an executable "aichat-foo"
 # somewhere in the PATH.
-typeset aichatAlias="aichat-$1"
-if type -t "$aichatAlias" >/dev/null; then
-    shift; eval $aichatAlias '"$@"'
+typeset aichatExtension="aichat-$1"
+if type -t "$aichatExtension" >/dev/null; then
+    shift; eval $aichatExtension '"$@"'
     exit $?
 fi
 
